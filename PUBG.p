@@ -14,6 +14,10 @@
 
  	#include <a_samp>
  	#include <a_mysql>
+ 	#include <zcmd>
+ 	#include <FCNPC>
+ 	#include <MapAndreas>
+ 	#include <streamer>
 
  	main() return 1;
 
@@ -21,15 +25,54 @@
  	forward public OnServerKickPlayer(playerid);
  	public OnServerKickPlayer(playerid) return Kick(playerid);
 
+ 	#define HOLDING(%0) \
+		((newkeys & (%0)) == (%0))
+
+	#define RELEASED(%0) \
+		(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+	
+	#define PRESSED(%0) \
+		(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+
  	enum {
  		DIALOG_ID_LOGIN,
- 		DIALOG_ID_REGISTER
+ 		DIALOG_ID_REGISTER,
+ 		DIALOG_DEV_CREATE
  	}
+
+ 	enum {
+		ITEM_FIST = 0,
+		ITEM_APPLE,
+		ITEM_MUSHROOM,
+		ITEM_GUN_AKM,
+	}
+
+	enum pickupVars {
+		pSQLID,
+		bool:pInUse,
+		pType,
+		Float:pX,
+		Float:pY,
+		Float:pZ,
+		Float:prX,
+		Float:prY,
+		Float:prZ,
+
+		pStaticID1,
+		Text3D:pStaticID2
+	}
+	new Pickups[MAX_PICKUPS][pickupVars];
+
+ 		#include "..\PUBG Source\textdraw_crosshair.p"
+ 		#include "..\PUBG Source\textdraw_loadout.p"
 
  		#include "..\PUBG Source\database.p"
  		#include "..\PUBG Source\gamemode.p"
  		#include "..\PUBG Source\default_player.p"
  		#include "..\PUBG Source\player_logs.p"
- 		#include "..\PUBG Source\items.p"
-
  		#include "..\PUBG Source\player_items.p"
+ 		#include "..\PUBG Source\items.p"
+ 		#include "..\PUBG Source\zombiesManager.p"
+
+ 		#include "..\PUBG Source\commands.p"
+ 		#include "..\PUBG Source\developement.p"

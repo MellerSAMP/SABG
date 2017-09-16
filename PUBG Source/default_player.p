@@ -5,6 +5,8 @@ new PlayerText:Logo[MAX_PLAYERS];
 enum playerVars {
 	bool:pOnline,
 	pWeight,
+	pMaxItemID,
+	pCurrentItem
 }
 new Player[MAX_PLAYERS][playerVars];
 
@@ -21,6 +23,8 @@ hook OnPlayerConnect(playerid) {
 	TogglePlayerSpectating(playerid, true);
 	Player[playerid][pOnline] = false;
 	Player[playerid][pWeight] = 0;
+	Player[playerid][pMaxItemID] = 0;
+	Player[playerid][pCurrentItem] = ITEM_FIST;
 
 	Logo[playerid] = CreatePlayerTextDraw(playerid, 320, 60, "San Andreas~n~Battleground's Battle");
 	PlayerTextDrawColor(playerid, Logo[playerid], 0xB79761FF);
@@ -57,16 +61,17 @@ public OnPlayerEstabilishConnection(playerid) {
 forward public OnPlayerRequestAccountCheck(playerid);
 public OnPlayerRequestAccountCheck(playerid) {
 	if(cache_num_rows()) {
-		new fields = cache_get_field_count(fields);
+		new fields;
+		cache_get_field_count(fields);
 		for(new id = 0; id < fields; id++) {
 			switch(cache_get_field_type(id)) {
-				case MYSQL_TYPE_INT24: {
+				case 3: {
 					new int, field[128];
 					cache_get_field_name(id, field);
 					cache_get_value_index_int(0, id, int);
 					SetPVarInt(playerid, field, int);
 				}
-				case MYSQL_TYPE_VARCHAR: {
+				case 253: {
 					new string[256], field[128];
 					cache_get_field_name(id, field);
 					cache_get_value_index(0, id, string, 256);
@@ -197,4 +202,11 @@ public OnPlayerRegister(playerid, stage) {
 		mysql_format(databaseHandle, query, 524, "SELECT * FROM accounts WHERE username = '%e'", name);
 		mysql_tquery(databaseHandle, query, "OnPlayerRegister", "ii", playerid, 1);
 	}
+}
+
+hook OnPlayerSpawn(playerid) {
+	for(new i = 0; i < 21; i++)
+		SendClientMessage(playerid, -1, " ");
+	SendClientMessage(playerid, 0xB79761FF, "Welcome back to the battle! Gear up and head out fighting!");
+	PlayerTextDrawHide(playerid, Logo[playerid]);
 }
